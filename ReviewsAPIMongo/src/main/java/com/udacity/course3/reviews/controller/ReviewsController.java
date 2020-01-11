@@ -2,10 +2,12 @@ package com.udacity.course3.reviews.controller;
 
 import com.udacity.course3.reviews.ReviewRepository.CommentsRepository;
 import com.udacity.course3.reviews.ReviewRepository.ProductRepository;
+import com.udacity.course3.reviews.ReviewRepository.ReviewDocRepository;
 import com.udacity.course3.reviews.ReviewRepository.ReviewsRepository;
 import com.udacity.course3.reviews.entity.Comment;
 import com.udacity.course3.reviews.entity.Product;
 import com.udacity.course3.reviews.entity.Review;
+import com.udacity.course3.reviews.entity.ReviewDoc;
 import com.udacity.course3.reviews.service.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +31,9 @@ public class ReviewsController {
     private ReviewsRepository reviewsRepository;
     @Autowired
     private CommentsRepository commentsRepository;
+
+    @Autowired
+    private ReviewDocRepository reviewDocRepository;
 
     /******************************************************************************
     * Creates a review for a product.
@@ -80,11 +85,18 @@ public class ReviewsController {
     /******************************************************************************/
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
     public ResponseEntity<List<?>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
+
         Product product = productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundException::new);
 
         List<Review> reviews = product.getReviews();
 
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
+        //Retrieve the reviews and comments from MongoDB
+        List<ReviewDoc> revDocs = reviewDocRepository.findByProdid(productId);
+
+        //System.err.println("Review Doc Count=" + revDocs.size());
+
+        //return new ResponseEntity<>(reviews, HttpStatus.OK);
+        return new ResponseEntity<>(revDocs, HttpStatus.OK);
     }
 }
