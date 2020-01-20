@@ -17,6 +17,15 @@ public class ReviewDoc {
 
     private List<CommentDoc> comments;
 
+    public ReviewDoc() {
+    }
+
+    public ReviewDoc(int reviewid, int prodid, List<CommentDoc> comments) {
+        this.reviewid = reviewid;
+        this.prodid = prodid;
+        this.comments = comments;
+    }
+
     public String getId() {
         return id;
     }

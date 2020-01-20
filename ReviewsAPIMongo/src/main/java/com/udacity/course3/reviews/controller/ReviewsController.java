@@ -4,10 +4,7 @@ import com.udacity.course3.reviews.ReviewRepository.CommentsRepository;
 import com.udacity.course3.reviews.ReviewRepository.ProductRepository;
 import com.udacity.course3.reviews.ReviewRepository.ReviewDocRepository;
 import com.udacity.course3.reviews.ReviewRepository.ReviewsRepository;
-import com.udacity.course3.reviews.entity.Comment;
-import com.udacity.course3.reviews.entity.Product;
-import com.udacity.course3.reviews.entity.Review;
-import com.udacity.course3.reviews.entity.ReviewDoc;
+import com.udacity.course3.reviews.entity.*;
 import com.udacity.course3.reviews.service.ProductNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -74,7 +71,24 @@ public class ReviewsController {
         comList.add(newComment);
         reviews.setComments(comList);
 
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
+        /******************************************************************************
+        * Save data to MongoDB document
+        /*****************************************************************************/
+        ReviewDoc newReviewDoc = new ReviewDoc();
+        newReviewDoc.setReviewid(reviews.getReviewid());
+        newReviewDoc.setProdid(productId);
+
+        CommentDoc newCommentDoc = new CommentDoc();
+        newCommentDoc.setId(newComment.getId());
+        newCommentDoc.setComment(newComment.getComment());
+
+        List <CommentDoc> comDocList = new  ArrayList();
+        comDocList.add(newCommentDoc);
+        newReviewDoc.setComments(comDocList);
+
+        reviewDocRepository.save(newReviewDoc);
+
+        return new ResponseEntity<>(newReviewDoc, HttpStatus.OK);
     }
 
     /*******************************************************************************
@@ -86,17 +100,14 @@ public class ReviewsController {
     @RequestMapping(value = "/reviews/products/{productId}", method = RequestMethod.GET)
     public ResponseEntity<List<?>> listReviewsForProduct(@PathVariable("productId") Integer productId) {
 
-        Product product = productRepository.findById(productId)
+        productRepository.findById(productId)
                 .orElseThrow(ProductNotFoundException::new);
 
-        List<Review> reviews = product.getReviews();
-
-        //Retrieve the reviews and comments from MongoDB
+        /******************************************************************************
+        * Retrieve the reviews and comments from MongoDB
+        /*****************************************************************************/
         List<ReviewDoc> revDocs = reviewDocRepository.findByProdid(productId);
 
-        //System.err.println("Review Doc Count=" + revDocs.size());
-
-        //return new ResponseEntity<>(reviews, HttpStatus.OK);
         return new ResponseEntity<>(revDocs, HttpStatus.OK);
     }
 }
