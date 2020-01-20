@@ -55,6 +55,10 @@ public class ReviewsApplicationTests {
 
     private static final int NUMBER_OF_REVIEWS = 1;
 
+    /**
+    * init method
+    * Copy the MySQL data from loading from the data.sql into the Mongo DB documents.
+    */
     @Before
     public void init() {
 
@@ -72,8 +76,8 @@ public class ReviewsApplicationTests {
         });
     }
     /**
-     * Test to ensure that the injected components are not null.
-     */
+    * Test to ensure that the injected components are not null.
+    */
     @Test
     public void injectedComponentsAreNotNull(){
         assertThat(productRepository).isNotNull();
@@ -81,6 +85,10 @@ public class ReviewsApplicationTests {
         assertThat(commentsRepository).isNotNull();
         assertThat(reviewDocrepository).isNotNull();
     }
+    /**
+    * testComments method
+    * Test reading products from MySQL.
+    */
     @Test
     public void testProduct(){
         //Expect 5 products
@@ -113,6 +121,10 @@ public class ReviewsApplicationTests {
         assertThat(testProd.getName()).isEqualTo("HP Laptop");
         assertThat(testProd.getReviews()).isEmpty();
     }
+    /**
+    * testComments method
+    * Test reading reviews and comments from MySQL.
+    */
     @Test
     public void testReviews() {
 
@@ -152,9 +164,9 @@ public class ReviewsApplicationTests {
         assertThat(updatedProduct2.getReviews().get(0).getComments().get(0).getComment()).isEqualTo(reviewComment3);
     }
     /**
-     * testComments method
-     * 1) Test adding a new comment to an existing review.
-     */
+    * testComments method
+    * Test adding a new comment to an existing review.
+    */
     @Test
     public void testComments() {
         Review reviews = reviewsRepository.findById(1)
@@ -165,15 +177,22 @@ public class ReviewsApplicationTests {
         assertThat(list.size()).isEqualTo(2);
         assertThat(list.get(0).getComment()).isEqualTo(reviewComment1);
     }
+    /**
+    * countAllReviewDocs method
+    * Test finding all reviews within the Mongo DB doc.
+    */
     @Test
-    public void countAllReviews() {
+    public void countAllReviewDocs() {
 
         var reviews = reviewDocrepository.findAll();
         assertEquals(NUMBER_OF_REVIEWS, reviews.size());
     }
-
+    /**
+    * countOneReviewDoc method
+    * Test finding one review within the Mongo DB doc.
+    */
     @Test
-    public void countOneReview() {
+    public void countOneReviewDoc() {
 
         List<CommentDoc> comDocList = new ArrayList<>();
         comDocList.add(new CommentDoc(1, reviewComment1));
@@ -183,7 +202,10 @@ public class ReviewsApplicationTests {
 
         assertThat(reviewDocrepository.count(example)).isEqualTo(1L);
     }
-
+    /**
+    * setsIdOnSave method
+    * Test finding one review and test id is not null in the Mongo DB doc.
+    */
     @Test
     public void setsIdOnSave() {
 
@@ -194,9 +216,12 @@ public class ReviewsApplicationTests {
 
         assertThat(reviewDoc.getId()).isNotNull();
     }
-
+    /**
+    * setsIdOnSave method
+    * Test finding one review doc from Mongo DB doc.
+    */
     @Test
-    public void findOneReview() {
+    public void findOneReviewDoc() {
 
         List<CommentDoc> comDocList = new ArrayList<>();
         comDocList.add(new CommentDoc(1, reviewComment1));
